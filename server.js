@@ -1,9 +1,7 @@
-// server.js
 const express = require("express");
 const cors = require("cors");
 const { Pool } = require("pg");
 
-// ----- DB POOL -----
 const pool = new Pool({
   host: process.env.PGHOST || process.env.POSTGRES_HOST || "localhost",
   port: Number(process.env.PGPORT || 5432),
@@ -12,7 +10,6 @@ const pool = new Pool({
   database: process.env.PGDATABASE || "postgres",
 });
 
-// маленький helper
 async function query(sql, params = []) {
   const client = await pool.connect();
   try {
@@ -27,14 +24,9 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// ----- HEALTH -----
 app.get("/healthz", (_req, res) => {
   res.json({ status: "ok" });
 });
-
-// ===========================
-// ORGS CRUD
-// ===========================
 
 app.get("/orgs", async (_req, res, next) => {
   try {
@@ -100,10 +92,6 @@ app.delete("/orgs/:id", async (req, res, next) => {
     next(err);
   }
 });
-
-// ===========================
-// INVENTORIES CRUD
-// ===========================
 
 app.get("/inventories", async (_req, res, next) => {
   try {
@@ -185,10 +173,6 @@ app.delete("/inventories/:id", async (req, res, next) => {
   }
 });
 
-// ===========================
-// PLAYBOOKS CRUD + RUN
-// ===========================
-
 app.get("/playbooks", async (_req, res, next) => {
   try {
     const { rows } = await query(
@@ -261,7 +245,6 @@ app.delete("/playbooks/:id", async (req, res, next) => {
   }
 });
 
-
 app.post("/playbooks/:id/run", async (req, res, next) => {
   try {
     const playbookId = Number(req.params.id);
@@ -309,7 +292,6 @@ app.post("/playbooks/:id/run", async (req, res, next) => {
     next(err);
   }
 });
-
 
 app.get("/jobs", async (_req, res, next) => {
   try {
